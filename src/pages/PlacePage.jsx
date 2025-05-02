@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks';
 import { toast } from 'react-toastify';
 
@@ -73,12 +73,20 @@ const PlacePage = () => {
           </div>
         </div>
         {isOwner && (
-          <button
-            onClick={handleDelete}
-            className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-          >
-            Delete Place
-          </button>
+          <div className="flex gap-2">
+            <Link
+              to={`/explore/account/places/${id}`}
+              className="rounded-lg bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600"
+            >
+              Edit Place
+            </Link>
+            <button
+              onClick={handleDelete}
+              className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+            >
+              Delete Place
+            </button>
+          </div>
         )}
       </div>
 

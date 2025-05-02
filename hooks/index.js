@@ -29,7 +29,7 @@ export const useProvideAuth = () => {
   }, []);
 
   const register = async (formData) => {
-    const { name, email, password, role } = formData;
+    const { name, email, password, role, phone, address } = formData;
 
     try {
       const { data } = await axiosInstance.post('explore/user/register', {
@@ -37,6 +37,8 @@ export const useProvideAuth = () => {
         email,
         password,
         role: role || 'user',
+        phone,
+        address,
       });
       if (data.user && data.token) {
         setUser(data.user);
@@ -78,6 +80,9 @@ export const useProvideAuth = () => {
       const { data } = await axiosInstance.post('explore/user/google/login', {
         name: `${decoded.given_name} ${decoded.family_name}`,
         email: decoded.email,
+        role: 'owner',
+        phone: '',
+        address: '',
       });
       if (data.user && data.token) {
         setUser(data.user);
@@ -126,7 +131,7 @@ export const useProvideAuth = () => {
   };
 
   const updateUser = async (userDetails) => {
-    const { name, password, picture } = userDetails;
+    const { name, password, picture, phone, address } = userDetails;
     const email = JSON.parse(getItemFromLocalStorage('user')).email;
     try {
       const { data } = await axiosInstance.put('/explore/user/update-user', {
@@ -134,6 +139,8 @@ export const useProvideAuth = () => {
         password,
         email,
         picture,
+        phone,
+        address,
       });
       return data;
     } catch (error) {

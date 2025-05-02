@@ -26,6 +26,8 @@ import { getItemFromLocalStorage } from './utils';
 import NotFoundPage from './pages/NotFoundPage';
 import AuthWrapper from './components/AuthWrapper';
 import { FilterProvider } from './context/FilterContext';
+import SuperAdminLoginPage from './pages/SuperAdminLoginPage';
+import SuperAdminDashboardPage from './pages/SuperAdminDashboardPage';
 
 function App() {
   useEffect(() => {
@@ -81,6 +83,15 @@ function App() {
 
                   {/* Individual Place Route */}
                   <Route path="place/:id" element={<PlacePage />} />
+
+                  {/* Super Admin Routes */}
+                  <Route path="super-admin">
+                    <Route path="login" element={<SuperAdminLoginPage />} />
+                    <Route
+                      path="dashboard"
+                      element={<SuperAdminDashboardPage />}
+                    />
+                  </Route>
 
                   {/* 404 Route */}
                   <Route path="*" element={<NotFoundPage />} />

@@ -14,6 +14,9 @@ import {
   ChevronDown,
   Home,
   Shield,
+  Plus,
+  Menu,
+  X,
 } from 'lucide-react';
 
 export const Header = () => {
@@ -22,6 +25,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const filterDropdownRef = useRef(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [showLogin, setShowLogin] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(true);
@@ -72,7 +76,7 @@ export const Header = () => {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    if (location.pathname === '/' || location.pathname === '/explore') {
+    if (location.pathname === '/explore') {
       setShowSearchBar(true);
     } else {
       setShowSearchBar(false);
@@ -95,29 +99,41 @@ export const Header = () => {
         <div className="absolute bottom-0 h-[1px] w-full bg-gradient-to-r from-transparent via-indigo-300/50 to-transparent" />
 
         {/* Main header content */}
-        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 md:px-8">
+        <div className="mx-auto flex max-w-screen-xl items-center justify-between px-4 py-3 md:px-8 lg:px-12">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-2">
             <div className="overflow-hidden rounded-full ring-2 ring-indigo-100 ring-offset-2 transition-all duration-300 group-hover:ring-indigo-300 group-hover:ring-offset-4">
               <img
-                className="h-10 w-10 object-cover transition-transform duration-300 group-hover:scale-110 md:h-12 md:w-12"
+                className="h-8 w-8 object-cover transition-transform duration-300 group-hover:scale-110 sm:h-10 sm:w-10 md:h-12 md:w-12"
                 src="/assets/companioncove.jpg"
                 alt="Companion Cove Logo"
               />
             </div>
             <div>
-              <span className="hidden bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-xl font-bold text-transparent transition-all duration-300 group-hover:from-indigo-600 group-hover:to-blue-500 md:block">
+              <span className="hidden bg-gradient-to-r from-indigo-700 to-blue-600 bg-clip-text text-lg font-bold text-transparent transition-all duration-300 group-hover:from-indigo-600 group-hover:to-blue-500 sm:text-xl md:block">
                 Companion Cove
               </span>
-              <span className="hidden text-sm font-medium text-indigo-600/80 transition-opacity duration-300 group-hover:text-indigo-500 md:block">
+              <span className="hidden text-xs font-medium text-indigo-600/80 transition-opacity duration-300 group-hover:text-indigo-500 sm:text-sm md:block">
                 Your Home Away From Home
               </span>
             </div>
           </Link>
 
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="ml-4 rounded-lg p-2 text-indigo-600 hover:bg-indigo-50 md:hidden"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+
           {/* Search Bar with enhanced styling */}
           {showSearchBar && (
-            <div className="mx-8 flex-1">
+            <div className="mx-4 flex-1 md:mx-8">
               <div className="mx-auto max-w-2xl transition-transform duration-300 hover:scale-[1.01]">
                 <SearchBar />
               </div>
@@ -125,7 +141,7 @@ export const Header = () => {
           )}
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-4">
+          <div className="hidden items-center gap-4 md:flex">
             {showSearchBar && (
               <div className="relative" ref={filterDropdownRef}>
                 <button
@@ -278,6 +294,13 @@ export const Header = () => {
                     <Shield className="h-4 w-4" />
                     Admin Login
                   </Link>
+                  <Link
+                    to="/explore/super-admin/login"
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Super Admin Login
+                  </Link>
                 </div>
               </div>
             ) : (
@@ -301,8 +324,13 @@ export const Header = () => {
                       {user.name}
                     </span>
                     <span className="text-xs text-indigo-500">
-                      {user.role === 'owner' ? 'Property Owner' : 'User'} #
-                      {user._id.slice(-6)}
+                      {user.role === 'owner'
+                        ? 'Property Owner'
+                        : user.role === 'admin'
+                          ? 'Admin'
+                          : user.role === 'superadmin'
+                            ? 'Super Admin'
+                            : 'User'}
                     </span>
                   </div>
                 </button>
@@ -318,21 +346,81 @@ export const Header = () => {
                     </p>
                     <p className="text-xs text-indigo-500">{user.email}</p>
                   </div>
-                  <Link
-                    to="/explore/account"
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
-                  >
-                    <User className="h-4 w-4" />
-                    My Account
-                  </Link>
-                  {user.role === 'owner' && (
-                    <Link
-                      to="/explore/account/places"
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
-                    >
-                      <Home className="h-4 w-4" />
-                      My Properties
-                    </Link>
+                  {user.role === 'owner' ? (
+                    <>
+                      <Link
+                        to="/explore/account/places"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <Home className="h-4 w-4" />
+                        My Properties
+                      </Link>
+                      <Link
+                        to="/explore/account/places/new"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add New Property
+                      </Link>
+                      <Link
+                        to="/explore/account"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <User className="h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </>
+                  ) : user.role === 'admin' ? (
+                    <>
+                      <Link
+                        to="/explore/admin/dashboard"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <Shield className="h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                      <Link
+                        to="/explore/account"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <User className="h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </>
+                  ) : user.role === 'superadmin' ? (
+                    <>
+                      <Link
+                        to="/explore/super-admin/dashboard"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <Shield className="h-4 w-4" />
+                        Property Owners KYC
+                      </Link>
+                      <Link
+                        to="/explore/account"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <User className="h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/explore/account"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <User className="h-4 w-4" />
+                        My Account
+                      </Link>
+                      <Link
+                        to="/explore/account/bookings"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                      >
+                        <Home className="h-4 w-4" />
+                        My Bookings
+                      </Link>
+                    </>
                   )}
                   <button
                     onClick={handleLogout}
@@ -342,6 +430,117 @@ export const Header = () => {
                     Logout
                   </button>
                 </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Menu */}
+        <div
+          className={`fixed inset-0 top-[72px] z-40 transform bg-white transition-transform duration-300 ease-in-out md:hidden ${
+            isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          <div className="flex h-full flex-col space-y-4 p-4">
+            {showSearchBar && (
+              <div className="w-full">
+                <SearchBar />
+              </div>
+            )}
+            {showSearchBar && (
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex w-full items-center justify-between rounded-lg border border-indigo-200 bg-white/80 px-4 py-2 text-sm font-medium text-indigo-700"
+              >
+                <span className="flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Filters
+                </span>
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            )}
+            {!user ? (
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to="/explore/login"
+                  className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <User className="h-4 w-4" />
+                  User Login
+                </Link>
+                <Link
+                  to="/explore/property-owner/login"
+                  className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <Home className="h-4 w-4" />
+                  Owner Login
+                </Link>
+                <Link
+                  to="/explore/admin/login"
+                  className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <Shield className="h-4 w-4" />
+                  Admin Login
+                </Link>
+                <Link
+                  to="/explore/super-admin/login"
+                  className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white"
+                >
+                  <Shield className="h-4 w-4" />
+                  Super Admin Login
+                </Link>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-2">
+                {user.role === 'owner' ? (
+                  <>
+                    <Link
+                      to="/explore/account/places"
+                      className="flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700"
+                    >
+                      <Home className="h-4 w-4" />
+                      My Properties
+                    </Link>
+                    <Link
+                      to="/explore/account/places/new"
+                      className="flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add New Property
+                    </Link>
+                  </>
+                ) : user.role === 'admin' ? (
+                  <Link
+                    to="/explore/admin/dashboard"
+                    className="flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Admin Dashboard
+                  </Link>
+                ) : user.role === 'superadmin' ? (
+                  <Link
+                    to="/explore/super-admin/dashboard"
+                    className="flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Super Admin Dashboard
+                  </Link>
+                ) : (
+                  <Link
+                    to="/explore/account"
+                    className="flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700"
+                  >
+                    <User className="h-4 w-4" />
+                    My Account
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2 text-sm font-medium text-red-600"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
               </div>
             )}
           </div>

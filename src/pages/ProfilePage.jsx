@@ -8,7 +8,15 @@ import { Button } from '@/components/ui/button';
 
 import PlacesPage from './PlacesPage';
 import { useAuth } from '../../hooks';
-import { LogOut, Mail, PenSquare, Text } from 'lucide-react';
+import {
+  LogOut,
+  Mail,
+  PenSquare,
+  Text,
+  Phone,
+  MapPin,
+  Hash,
+} from 'lucide-react';
 import EditProfileDialog from '@/components/ui/EditProfileDialog';
 
 const ProfilePage = () => {
@@ -43,9 +51,9 @@ const ProfilePage = () => {
     <div>
       <AccountNav />
       {subpage === 'profile' && (
-        <div className="m-4 flex flex-col items-center gap-8 rounded-[10px]  p-4 sm:h-1/5 sm:flex-row sm:items-stretch lg:gap-28 lg:pl-32 lg:pr-20">
+        <div className="m-4 flex flex-col items-center gap-8 rounded-[10px] p-4 sm:h-1/5 sm:flex-row sm:items-stretch lg:gap-28 lg:pl-32 lg:pr-20">
           {/* avatar */}
-          <div className="flex h-40 w-40 justify-center rounded-full bg-gray-200 p-4  sm:h-72 sm:w-72 md:h-96 md:w-96">
+          <div className="flex h-40 w-40 justify-center rounded-full bg-gray-200 p-4 sm:h-72 sm:w-72 md:h-96 md:w-96">
             <Avatar>
               {user.picture ? (
                 <AvatarImage src={user.picture} />
@@ -55,14 +63,13 @@ const ProfilePage = () => {
                   className="object-cover"
                 />
               )}
-
               <AvatarFallback>{user.name.slice([0], [1])}</AvatarFallback>
             </Avatar>
           </div>
 
           <div className="flex grow flex-col items-center gap-10 sm:items-start sm:justify-around sm:gap-0">
             {/* user details */}
-            <div className="flex flex-col items-center gap-2 sm:items-start">
+            <div className="flex flex-col items-center gap-4 sm:items-start">
               <div className="flex items-center gap-2">
                 <Text height="18" width="18" />
                 <div className="text-xl">
@@ -77,14 +84,40 @@ const ProfilePage = () => {
                   <span className="text-gray-600">{user.email}</span>
                 </div>
               </div>
-              <p></p>
+              {user.role === 'owner' && (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Phone height="18" width="18" />
+                    <div className="text-xl">
+                      <span>Phone: </span>
+                      <span className="text-gray-600">
+                        {user.phone || 'Not provided'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin height="18" width="18" />
+                    <div className="text-xl">
+                      <span>Address: </span>
+                      <span className="text-gray-600">
+                        {user.address || 'Not provided'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Hash height="18" width="18" />
+                    <div className="text-xl">
+                      <span>User ID: </span>
+                      <span className="text-gray-600">{user._id}</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Action buttons */}
             <div className="flex w-full justify-around sm:justify-end sm:gap-5 md:gap-10">
-              {/* <Button varient="secondary">Edit profile</Button> */}
               <EditProfileDialog />
-
               <Button variant="secondary" onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 Logout

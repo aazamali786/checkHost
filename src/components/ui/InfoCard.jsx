@@ -56,31 +56,47 @@ const InfoCard = ({ place, onDelete }) => {
   };
 
   return (
-    <Link
-      to={`/explore/place/${place._id}`}
+    <div
       className="my-3 flex cursor-pointer flex-col gap-4 rounded-2xl bg-gray-100 p-4 transition-all hover:bg-gray-300 md:flex-row"
       key={place._id}
     >
-      <div className="flex w-full shrink-0 bg-gray-300 sm:h-32 sm:w-32 ">
+      <Link
+        to={`/explore/place/${place._id}`}
+        className="flex w-full shrink-0 bg-gray-300 sm:h-32 sm:w-32"
+      >
         <PlaceImg place={place} />
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col">
         <div className="flex flex-col gap-2">
           <div className="flex items-start justify-between">
-            <div className="flex flex-col gap-2">
+            <Link
+              to={`/explore/place/${place._id}`}
+              className="flex flex-col gap-2"
+            >
               <h2 className="text-lg font-medium md:text-xl">{place.title}</h2>
               <PropertyTypeBadge type={place.propertyType || 'pg'} />
+            </Link>
+            <div className="flex gap-2">
+              <Link
+                to={`/explore/account/places/${place._id}`}
+                className="rounded-lg bg-indigo-500 px-4 py-2 text-white hover:bg-indigo-600"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={handleDelete}
+                className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+              >
+                Delete
+              </button>
             </div>
-            <button
-              onClick={handleDelete}
-              className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-            >
-              Delete
-            </button>
           </div>
-          <p className="mt-1 line-clamp-3 text-sm text-gray-600">
+          <Link
+            to={`/explore/place/${place._id}`}
+            className="mt-1 line-clamp-3 text-sm text-gray-600"
+          >
             {place.description}
-          </p>
+          </Link>
           <div className="mt-auto flex items-center gap-2">
             <span className="font-medium">₹{place.price}</span>
             <span className="text-gray-600">
@@ -91,7 +107,7 @@ const InfoCard = ({ place, onDelete }) => {
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 

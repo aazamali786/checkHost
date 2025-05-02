@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { GoogleLogin } from '@react-oauth/google';
-
 import { useAuth } from '../../hooks';
+import axiosInstance from '../utils/axios';
 
-const PropertyOwnerLoginPage = () => {
+const SuperAdminLoginPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [redirect, setRedirect] = useState(false);
   const auth = useAuth();
+  const [loading, setLoading] = useState(true);
 
   const handleFormData = (e) => {
     const { name, value } = e.target;
@@ -17,37 +17,69 @@ const PropertyOwnerLoginPage = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const response = await auth.login(formData);
-    if (response.success) {
-      toast.success(response.message);
-      setRedirect('/explore/account/places');
+
+    // Hardcoded super admin credentials
+    const SUPER_ADMIN_EMAIL = 'superadmin@gmail.com';
+    const SUPER_ADMIN_PASSWORD = 'aazam@2004';
+
+    if (
+      formData.email === SUPER_ADMIN_EMAIL &&
+      formData.password === SUPER_ADMIN_PASSWORD
+    ) {
+      try {
+        // Create super admin user object
+        const superAdminUser = {
+          _id: 'superadmin',
+          name: 'Super Admin',
+          email: SUPER_ADMIN_EMAIL,
+          role: 'superadmin',
+        };
+
+        // Store super admin session
+        localStorage.setItem('token', 'superadmin-token');
+        localStorage.setItem('user', JSON.stringify(superAdminUser));
+
+        // Update auth context
+        auth.setUser(superAdminUser);
+
+        // Set the token in axios headers
+        axiosInstance.defaults.headers.common['Authorization'] =
+          'Bearer superadmin-token';
+
+        toast.success('Super Admin login successful');
+        setRedirect('/explore/super-admin/dashboard');
+      } catch (error) {
+        console.error('Login error:', error);
+        toast.error('Login failed');
+      }
     } else {
-      toast.error(response.message);
+      toast.error('Invalid super admin credentials');
     }
   };
 
-  const handleGoogleLogin = async (credential) => {
-    const response = await auth.googleLogin(credential);
-    if (response.success) {
-      toast.success(response.message);
-      setRedirect('/explore/account/places');
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (storedUser && storedUser.role === 'superadmin') {
+      setRedirect('/explore/super-admin/dashboard');
     } else {
-      toast.error(response.message);
+      setLoading(false);
     }
-  };
+  }, []);
 
   if (redirect) {
     return <Navigate to={redirect} />;
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-screen-md flex-col items-center justify-center px-4 pt-20">
       <div className="w-full space-y-4 rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Login as Property Owner</h1>
-          <p className="mt-2 text-gray-600">
-            Access your property owner account
-          </p>
+          <h1 className="text-2xl font-bold">Super Admin Login</h1>
+          <p className="mt-2 text-gray-600">Access the super admin dashboard</p>
         </div>
 
         <form className="space-y-4" onSubmit={handleFormSubmit}>
@@ -62,7 +94,7 @@ const PropertyOwnerLoginPage = () => {
               id="email"
               name="email"
               type="email"
-              placeholder="your@email.com"
+              placeholder="Super Admin Email"
               value={formData.email}
               onChange={handleFormData}
               className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -81,7 +113,7 @@ const PropertyOwnerLoginPage = () => {
               id="password"
               name="password"
               type="password"
-              placeholder="password"
+              placeholder="Super Admin Password"
               value={formData.password}
               onChange={handleFormData}
               className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -92,33 +124,9 @@ const PropertyOwnerLoginPage = () => {
           <button className="primary w-full">Login</button>
         </form>
 
-        <div className="mb-4 flex w-full items-center gap-4">
-          <div className="h-0 w-1/2 border-[1px]"></div>
-          <p className="small -mt-1">or</p>
-          <div className="h-0 w-1/2 border-[1px]"></div>
-        </div>
-
-        {/* Google login button */}
-        <div className="flex h-[50px] justify-center">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              handleGoogleLogin(credentialResponse.credential);
-            }}
-            onError={() => {
-              console.log('Login Failed');
-            }}
-            text="continue_with"
-            width="350"
-          />
-        </div>
-
         <div className="py-2 text-center text-gray-500">
-          Don't have an account yet?{' '}
-          <Link
-            className="text-black underline"
-            to={'/explore/property-owner/register'}
-          >
-            Register now
+          <Link className="text-black underline" to={'/'}>
+            Back to Home
           </Link>
         </div>
       </div>
@@ -126,4 +134,4 @@ const PropertyOwnerLoginPage = () => {
   );
 };
 
-export default PropertyOwnerLoginPage;
+export default SuperAdminLoginPage;

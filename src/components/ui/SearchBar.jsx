@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFilters } from '../../context/FilterContext';
+import { useAuth } from '../../../hooks';
 import { Search } from 'lucide-react';
 
 // Rajasthan divisions and their districts
@@ -31,10 +32,12 @@ const rajasthanData = {
 const SearchBar = ({ isLandingPage }) => {
   const navigate = useNavigate();
   const { filters, updateFilters } = useFilters();
+  const { user } = useAuth();
   const [selectedDivision, setSelectedDivision] = useState('');
   const [districtInput, setDistrictInput] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isValidDistrict, setIsValidDistrict] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Sync with filters when component mounts or filters change
   useEffect(() => {
@@ -47,7 +50,16 @@ const SearchBar = ({ isLandingPage }) => {
       if (division) {
         setSelectedDivision(division);
         setDistrictInput(filters.location);
+        // Reset suggestions when filters change
+        setSuggestions([]);
+        setShowSuggestions(false);
       }
+    } else {
+      // Reset all states when filters.location is empty
+      setSelectedDivision('');
+      setDistrictInput('');
+      setSuggestions([]);
+      setShowSuggestions(false);
     }
   }, [filters.location]);
 
@@ -58,6 +70,7 @@ const SearchBar = ({ isLandingPage }) => {
         district.toLowerCase().includes(districtInput.toLowerCase()),
       );
       setSuggestions(matchingSuggestions);
+      setShowSuggestions(matchingSuggestions.length > 0);
       setIsValidDistrict(
         availableDistricts.some(
           (district) => district.toLowerCase() === districtInput.toLowerCase(),
@@ -65,16 +78,48 @@ const SearchBar = ({ isLandingPage }) => {
       );
     } else {
       setSuggestions([]);
+      setShowSuggestions(false);
       setIsValidDistrict(false);
     }
   }, [selectedDivision, districtInput]);
 
+  const handleDistrictSelect = (district) => {
+    setDistrictInput(district);
+    setSuggestions([]);
+    setShowSuggestions(false);
+    document.querySelector('input[type="text"]')?.focus();
+  };
+
+  const handleInputChange = (e) => {
+    setDistrictInput(e.target.value);
+    if (e.target.value === '') {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleInputBlur = () => {
+    // Small delay to allow click events to fire first
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 200);
+  };
+
   const handleSearch = () => {
     if (isValidDistrict) {
+      setSuggestions([]);
+      setShowSuggestions(false);
       updateFilters({
         ...filters,
         location: districtInput,
       });
+
+      // Only check authentication when not on landing page
+      if (!isLandingPage && !user) {
+        navigate('/explore/login');
+        return;
+      }
+
       navigate('/explore');
     }
   };
@@ -131,27 +176,35 @@ const SearchBar = ({ isLandingPage }) => {
           type="text"
           placeholder="Enter district..."
           value={districtInput}
-          onChange={(e) => setDistrictInput(e.target.value)}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
           className={inputClasses}
           disabled={!selectedDivision}
         />
 
         {/* Suggestions Dropdown */}
-        {suggestions.length > 0 && districtInput && (
-          <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-indigo-100 bg-white py-2 shadow-lg">
-            {suggestions.map((district) => (
-              <button
-                key={district}
-                onClick={() => {
-                  setDistrictInput(district);
-                  setSuggestions([]);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-indigo-50"
-              >
-                {district}
-              </button>
-            ))}
-          </div>
+        {showSuggestions && suggestions.length > 0 && districtInput && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => {
+                setShowSuggestions(false);
+                setSuggestions([]);
+              }}
+            />
+            <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-lg border border-indigo-100 bg-white py-2 shadow-lg">
+              {suggestions.map((district) => (
+                <button
+                  key={district}
+                  onClick={() => handleDistrictSelect(district)}
+                  className="w-full px-4 py-2 text-left text-sm text-gray-700 transition-colors hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none"
+                >
+                  {district}
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

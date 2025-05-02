@@ -12,6 +12,7 @@ const PropertyOwnerSignupPage = () => {
     password: '',
     phone: '',
     address: '',
+    role: 'owner',
   });
   const [redirect, setRedirect] = useState(false);
   const auth = useAuth();
@@ -23,10 +24,17 @@ const PropertyOwnerSignupPage = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!formData.phone || !formData.address) {
+      toast.error('Phone number and address are required for property owners');
+      return;
+    }
+
     const response = await auth.register(formData);
     if (response.success) {
       toast.success(response.message);
-      setRedirect('/explore/account/places/new');
+      setRedirect('/explore/account/places');
     } else {
       toast.error(response.message);
     }
@@ -36,7 +44,7 @@ const PropertyOwnerSignupPage = () => {
     const response = await auth.googleLogin(credential);
     if (response.success) {
       toast.success(response.message);
-      setRedirect('/explore/account/places/new');
+      setRedirect('/explore/account/places');
     } else {
       toast.error(response.message);
     }
@@ -47,48 +55,112 @@ const PropertyOwnerSignupPage = () => {
   }
 
   return (
-    <div className="mt-4 flex grow items-center justify-around p-4 md:p-0">
-      <div className="mb-40">
-        <h1 className="mb-4 text-center text-4xl">
-          Register as Property Owner
-        </h1>
-        <form className="mx-auto max-w-md" onSubmit={handleFormSubmit}>
-          <input
-            name="name"
-            type="text"
-            placeholder="John Doe"
-            value={formData.name}
-            onChange={handleFormData}
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="your@email.com"
-            value={formData.email}
-            onChange={handleFormData}
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="password"
-            value={formData.password}
-            onChange={handleFormData}
-          />
-          <input
-            name="phone"
-            type="tel"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={handleFormData}
-          />
-          <input
-            name="address"
-            type="text"
-            placeholder="Business Address"
-            value={formData.address}
-            onChange={handleFormData}
-          />
-          <button className="primary my-2">Register</button>
+    <div className="mx-auto flex min-h-screen max-w-screen-md flex-col items-center justify-center px-4 pt-20">
+      <div className="w-full space-y-4 rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold">Register as Property Owner</h1>
+          <p className="mt-2 text-gray-600">
+            Create an account to list and manage your properties
+          </p>
+        </div>
+
+        <form className="space-y-4" onSubmit={handleFormSubmit}>
+          <div>
+            <label
+              htmlFor="name"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleFormData}
+              className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="your@email.com"
+              value={formData.email}
+              onChange={handleFormData}
+              className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="password"
+              value={formData.password}
+              onChange={handleFormData}
+              className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="phone"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Phone Number
+            </label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="Phone Number"
+              value={formData.phone}
+              onChange={handleFormData}
+              className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="address"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Business Address
+            </label>
+            <input
+              id="address"
+              name="address"
+              type="text"
+              placeholder="Business Address"
+              value={formData.address}
+              onChange={handleFormData}
+              className="w-full rounded-lg border border-gray-300 p-2 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <button className="primary w-full">Register</button>
         </form>
 
         <div className="mb-4 flex w-full items-center gap-4">
