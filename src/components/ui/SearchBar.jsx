@@ -6,10 +6,24 @@ import { Search } from 'lucide-react';
 
 // Rajasthan divisions and their districts
 const rajasthanData = {
-  'Ajmer Division': ['Ajmer', 'Bhilwara', 'Nagaur', 'Tonk'],
-  'Bharatpur Division': ['Bharatpur', 'Dholpur', 'Karauli', 'Sawai Madhopur'],
+  'Ajmer Division': ['Ajmer', 'Beawar', 'Bhilwara', 'Nagaur', 'Tonk', 'Nagaur'],
+  'Bharatpur Division': [
+    'Bharatpur',
+    'Dholpur',
+    'Karauli',
+    'Sawai Madhopur',
+    'Deeg',
+  ],
   'Bikaner Division': ['Bikaner', 'Churu', 'Ganganagar', 'Hanumangarh'],
-  'Jaipur Division': ['Jaipur', 'Alwar', 'Jhunjhunu', 'Sikar', 'Dausa'],
+  'Jaipur Division': [
+    'Jaipur',
+    'Alwar',
+    'Jhunjhunu',
+    'Sikar',
+    'Dausa',
+    'Khairthal-Tijara',
+    'Kotputli-Behror',
+  ],
   'Jodhpur Division': [
     'Jodhpur',
     'Barmer',
@@ -17,6 +31,8 @@ const rajasthanData = {
     'Jalore',
     'Pali',
     'Sirohi',
+    'Phalodi',
+    'Balotra'
   ],
   'Kota Division': ['Kota', 'Baran', 'Bundi', 'Jhalawar'],
   'Udaipur Division': [
@@ -25,6 +41,7 @@ const rajasthanData = {
     'Chittorgarh',
     'Dungarpur',
     'Rajsamand',
+    'Salumbar',
     'Pratapgarh',
   ],
 };
