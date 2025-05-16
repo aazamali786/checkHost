@@ -48,7 +48,9 @@ const AdminDashboardPage = () => {
 
   const handleActivate = async (placeId) => {
     try {
-      const { data } = await axiosInstance.put(`/places/activate/${placeId}`);
+      const { data } = await axiosInstance.put(
+        `/explore/places/activate/${placeId}`,
+      );
       if (data.success) {
         toast.success(data.message);
         setPendingPlaces(
@@ -120,7 +122,7 @@ const AdminDashboardPage = () => {
                     onClick={() => handleActivate(place._id)}
                     className="w-full rounded-lg bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
                   >
-                    Activate Property
+                    Approve Property KYC
                   </button>
                 </div>
               </div>
